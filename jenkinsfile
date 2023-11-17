@@ -23,6 +23,7 @@ pipeline {
         stage('Execução do Ansible') {
             steps {
                 script {
+                    dir('src') {
                         sh 'ansible-playbook -i inventory.ini playbook.yml'
                     }
                 }
