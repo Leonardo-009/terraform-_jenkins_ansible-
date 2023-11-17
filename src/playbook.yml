@@ -18,7 +18,3 @@
           - ansible
         state: present
       become: yes
-
-    - name: Executar script de configuração
-      shell: ./configure.sh  # Substitua pelo caminho correto do seu script de configuração
-      become: yes
