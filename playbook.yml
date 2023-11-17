@@ -1,0 +1,24 @@
+---
+- name: Configuração do Aplicativo
+  hosts: localhost  # Use localhost se a execução é local
+  become: yes  # Torna o usuário root para executar tarefas no servidor
+
+  tasks:
+    - name: Instalar pacotes necessários
+      apt:
+        name:
+          - python
+          - python-pip
+        state: present
+      become: yes
+
+    - name: Instalar dependências do Ansible
+      pip:
+        name:
+          - ansible
+        state: present
+      become: yes
+
+    - name: Executar script de configuração
+      shell: ./configure.sh  # Substitua pelo caminho correto do seu script de configuração
+      become: yes
