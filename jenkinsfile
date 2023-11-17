@@ -1,52 +1,36 @@
 pipeline {
     agent any
-    
-    environment {
-        TF_VERSION = '0.14.7'  // Versão do Terraform a ser usada
-    }
 
     stages {
-        stage('Checkout') {
+
+        stage('Checkout source') {
             steps {
+                git url: 'https://github.com/Leonardo-009/terraform-_jenkins_ansible-.git', branch: 'main'
+            }
+        }
+
+        stage('Criação ou atualização da infra') {
+            // environment {
+            //     ARM_CLIENT_ID = credentials('ARM_CLIENT_ID')
+            //     ARM_CLIENT_SECRET = credentials('ARM_CLIENT_SECRET')
+            //     ARM_SUBSCRIPTION_ID = credentials('ARM_SUBSCRIPTION_ID')
+            //     ARM_TENANT_ID = credentials('ARM_TENANT_ID')
+            //     resource_group_name = credentials('resource_group_name')
+            //     storage_account_name = credentials('storage_account_name')
+            //     container_name = credentials('container_name')
+            //     az_key = credentials('az_key')
+            // }
+            steps {
+
                 script {
-                    checkout scm
+                    dir('src') {
+                        sh 'terraform init'
+                        sh 'terraform apply --auto-approve'
+                    }
                 }
             }
         }
 
-        stage('Install Terraform') {
-            steps {
-                script {
-                    sh "curl -O https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
-                    sh "unzip terraform_${TF_VERSION}_linux_amd64.zip"
-                    sh "mv terraform /usr/local/bin/"
-                }
-            }
-        }
-
-        stage('Terraform Init') {
-            steps {
-                script {
-                    sh 'terraform init'
-                }
-            }
-        }
-
-        stage('Terraform Apply') {
-            steps {
-                script {
-                    sh 'terraform apply --auto-approve'
-                }
-            }
-        }
     }
 
-    post {
-        always {
-            // Cleanup steps, if needed
-            script {
-                sh 'terraform destroy --auto-approve'
-            }
-        }
-    }
 }
