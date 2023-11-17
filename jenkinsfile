@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+    
+    environment {
+        TF_VERSION = '0.14.7'  // Versão do Terraform a ser usada
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    checkout scm
+                }
+            }
+        }
+
+        stage('Install Terraform') {
+            steps {
+                script {
+                    sh "curl -O https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
+                    sh "unzip terraform_${TF_VERSION}_linux_amd64.zip"
+                    sh "mv terraform /usr/local/bin/"
+                }
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                script {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                script {
+                    sh 'terraform apply --auto-approve'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Cleanup steps, if needed
+            script {
+                sh 'terraform destroy --auto-approve'
+            }
+        }
+    }
+}
